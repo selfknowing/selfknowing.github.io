@@ -335,8 +335,10 @@
             container.innerHTML = html;
         }
 
-        // 开始测试（新增函数，控制题目显示和按钮切换）
+        // 开始测试（修复点击无反应，确保函数正常执行）
         function startQuiz() {
+            // 先执行渲染题目，再切换显示和按钮状态，避免DOM未加载导致异常
+            renderQuiz();
             const quizContainer = document.getElementById('quiz-container');
             const submitBtn = document.querySelector('.submit-btn');
             // 显示题目，切换按钮为提交功能
@@ -471,5 +473,11 @@
             renderQuiz();
         }
 
-        // 页面加载时不渲染题目（初始隐藏）
-        window.onload = function() {};&#xA;    &lt;/script&gt;&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;
+        // 页面加载时初始化，确保函数可正常调用
+        window.onload = function() {
+            // 初始化渲染（不显示，仅确保DOM加载完成）
+            renderQuiz();
+        };
+    </script>
+</body>
+</html>
