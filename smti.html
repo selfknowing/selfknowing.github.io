@@ -182,8 +182,8 @@
     <div class="container">
         <h1 class="title">20题性格测试</h1>
         <p class="subtitle">诚实作答，解锁你的真实性格特质（每题仅选一个答案）</p>
-        <div id="quiz-container"></div>
-        <button class="submit-btn" onclick="submitQuiz()">提交测试，查看结果</button>
+        <div id="quiz-container" style="display: none;"></div>
+        <button class="submit-btn" onclick="startQuiz()">开始测试</button>
         <div class="result" id="result"></div>
         <div class="personality-report" id="personalityReport"></div>
         <button class="reset-btn" onclick="resetQuiz()">重新测试</button>
@@ -335,6 +335,16 @@
             container.innerHTML = html;
         }
 
+        // 开始测试（新增函数，控制题目显示和按钮切换）
+        function startQuiz() {
+            const quizContainer = document.getElementById('quiz-container');
+            const submitBtn = document.querySelector('.submit-btn');
+            // 显示题目，切换按钮为提交功能
+            quizContainer.style.display = "block";
+            submitBtn.innerText = "提交测试，查看结果";
+            submitBtn.onclick = submitQuiz;
+        }
+
         // 提交测试，计算维度得分，生成性格报告
         function submitQuiz() {
             // 初始化四大维度得分（0分倾向前者，得分越高倾向后者）
@@ -369,7 +379,7 @@
             // 生成性格分析报告
             const report = generateReport(scores);
 
-            // 显示结果和报告
+            // 显示结果和报告，锁定提交按钮
             const resultDom = document.getElementById('result');
             const reportDom = document.getElementById('personalityReport');
             const resetBtn = document.querySelector('.reset-btn');
@@ -445,20 +455,21 @@
             const reportDom = document.getElementById('personalityReport');
             const resetBtn = document.querySelector('.reset-btn');
             const submitBtn = document.querySelector('.submit-btn');
+            const quizContainer = document.getElementById('quiz-container');
 
-            // 重置页面状态
+            // 重置页面状态：隐藏结果、报告和题目，恢复开始测试按钮
             resultDom.style.display = "none";
             reportDom.style.display = "none";
             resetBtn.style.display = "none";
+            quizContainer.style.display = "none";
             submitBtn.disabled = false;
             submitBtn.style.opacity = "1";
+            submitBtn.innerText = "开始测试";
+            submitBtn.onclick = startQuiz;
 
-            // 重新渲染题目
+            // 重新渲染题目（重置选项选中状态）
             renderQuiz();
         }
 
-        // 页面加载时渲染题目
-        window.onload = renderQuiz;
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+        // 页面加载时不渲染题目（初始隐藏）
+        window.onload = function() {};&#xA;    &lt;/script&gt;&#xA;&lt;/body&gt;&#xA;&lt;/html&gt;
