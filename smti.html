@@ -3,9 +3,462 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人网站</title>
+    <title>20题性格测试 | 解锁你的真实性格</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background-color: #f0f4f8;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 3px 18px rgba(0,0,0,0.08);
+        }
+
+        .title {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 30px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 35px;
+            font-size: 16px;
+        }
+
+        .question-item {
+            margin-bottom: 28px;
+            padding: 22px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .question-item:hover {
+            border-color: #4299e1;
+            box-shadow: 0 2px 8px rgba(66, 153, 225, 0.1);
+        }
+
+        .question-title {
+            font-size: 18px;
+            color: #2d3748;
+            margin-bottom: 18px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            transition: background 0.3s, border-color 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option input {
+            margin-right: 12px;
+            accent-color: #4299e1;
+        }
+
+        .option:hover {
+            background-color: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .option:has(input:checked) {
+            background-color: #e8f4f8;
+            border-color: #4299e1;
+        }
+
+        .submit-btn {
+            display: block;
+            width: 220px;
+            height: 54px;
+            margin: 50px auto 30px;
+            background-color: #4299e1;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 19px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #3182ce;
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .result {
+            text-align: center;
+            font-size: 24px;
+            color: #2d3748;
+            margin: 30px 0;
+            font-weight: 600;
+            display: none;
+        }
+
+        .personality-report {
+            background-color: #f7fafc;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            line-height: 1.8;
+            color: #2d3748;
+            display: none;
+            border-left: 4px solid #4299e1;
+        }
+
+        .report-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #4299e1;
+        }
+
+        .reset-btn {
+            display: block;
+            width: 180px;
+            height: 48px;
+            margin: 30px auto;
+            background-color: #f5f5f5;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: none;
+        }
+
+        .reset-btn:hover {
+            background-color: #e8f4f8;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            .title {
+                font-size: 26px;
+            }
+            .question-title {
+                font-size: 17px;
+            }
+            .submit-btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>你好，世界！</h1>
-</body>
-</html>
+    <div class="container">
+        <h1 class="title">20题性格测试</h1>
+        <p class="subtitle">诚实作答，解锁你的真实性格特质（每题仅选一个答案）</p>
+        <div id="quiz-container"></div>
+        <button class="submit-btn" onclick="submitQuiz()">提交测试，查看结果</button>
+        <div class="result" id="result"></div>
+        <div class="personality-report" id="personalityReport"></div>
+        <button class="reset-btn" onclick="resetQuiz()">重新测试</button>
+    </div>
+
+    <script>
+        // 20道性格测试题（围绕外向/内向、感性/理性、细致/粗犷、主动/被动四大维度）
+        const questions = [
+            {
+                id: 1,
+                title: "1. 周末休息时，你更倾向于？",
+                options: ["约朋友聚会、出门逛街", "宅在家看书、追剧或独处"],
+                type: "extrovert" // 外向=0，内向=1
+            },
+            {
+                id: 2,
+                title: "2. 当你遇到烦心事时，会怎么做？",
+                options: ["找信任的人倾诉，释放情绪", "自己默默消化，不轻易表露"],
+                type: "emotional" // 感性=0，理性=1
+            },
+            {
+                id: 3,
+                title: "3. 做决定时，你更看重？",
+                options: ["内心的感受和直觉", "客观的事实和逻辑"],
+                type: "emotional"
+            },
+            {
+                id: 4,
+                title: "4. 面对新环境，你会？",
+                options: ["主动认识新朋友，快速适应", "慢慢观察，等别人主动接近"],
+                type: "extrovert"
+            },
+            {
+                id: 5,
+                title: "5. 你对细节的态度是？",
+                options: ["很在意细节，力求完美", "更看重整体，细节过得去就好"],
+                type: "detail" // 细致=0，粗犷=1
+            },
+            {
+                id: 6,
+                title: "6. 别人对你的评价，更可能是？",
+                options: ["热情开朗，善于表达", "沉稳内敛，不善言辞"],
+                type: "extrovert"
+            },
+            {
+                id: 7,
+                title: "7. 当计划被打乱时，你会？",
+                options: ["感到烦躁，尽量挽回原有计划", "从容应对，灵活调整方案"],
+                type: "detail"
+            },
+            {
+                id: 8,
+                title: "8. 看到感人的电影或故事，你会？",
+                options: ["容易共情，忍不住落泪", "内心有触动，但不会轻易表现"],
+                type: "emotional"
+            },
+            {
+                id: 9,
+                title: "9. 团队合作中，你通常是？",
+                options: ["主动牵头，带动大家推进", "配合他人，完成分配的任务"],
+                type: "active" // 主动=0，被动=1
+            },
+            {
+                id: 10,
+                title: "10. 你更喜欢哪种学习/工作方式？",
+                options: ["与人协作，互相交流启发", "独立完成，避免被打扰"],
+                type: "extrovert"
+            },
+            {
+                id: 11,
+                title: "11. 买东西时，你会？",
+                options: ["反复对比，纠结细节", "看中就买，不拖泥带水"],
+                type: "detail"
+            },
+            {
+                id: 12,
+                title: "12. 当朋友有矛盾时，你会？",
+                options: ["主动调解，帮双方化解", "不介入，相信他们能自己解决"],
+                type: "active"
+            },
+            {
+                id: 13,
+                title: "13. 你更关注？",
+                options: ["别人的情绪和感受", "事情的结果和效率"],
+                type: "emotional"
+            },
+            {
+                id: 14,
+                title: "14. 参加社交活动后，你会觉得？",
+                options: ["精力充沛，很开心", "身心疲惫，需要独处恢复"],
+                type: "extrovert"
+            },
+            {
+                id: 15,
+                title: "15. 做事情时，你更注重？",
+                options: ["过程的体验和感受", "最终的结果和成效"],
+                type: "emotional"
+            },
+            {
+                id: 16,
+                title: "16. 面对陌生人的求助，你会？",
+                options: ["主动帮忙，尽己所能", "犹豫一下，看情况再决定"],
+                type: "active"
+            },
+            {
+                id: 17,
+                title: "17. 你对自己的要求是？",
+                options: ["严谨细致，不犯小错", "大方向没错就好，不必苛求"],
+                type: "detail"
+            },
+            {
+                id: 18,
+                title: "18. 你更擅长？",
+                options: ["表达自己的想法和感受", "倾听他人，默默给予支持"],
+                type: "extrovert"
+            },
+            {
+                id: 19,
+                title: "19. 遇到困难时，你会？",
+                options: ["主动寻找解决办法", "等待他人帮助或顺其自然"],
+                type: "active"
+            },
+            {
+                id: 20,
+                title: "20. 你更倾向于？",
+                options: ["提前规划好一切，按部就班", "随机应变，享受未知的惊喜"],
+                type: "detail"
+            }
+        ];
+
+        // 渲染题目到页面
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            let html = '';
+            questions.forEach(q => {
+                html += `
+                <div class="question-item" id="q-${q.id}">
+                    <div class="question-title">${q.title}</div>
+                    <div class="options">
+                        ${q.options.map((opt, index) => `
+                            <label class="option">
+                                <input type="radio" name="q-${q.id}" value="${index}" required> ${opt}
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // 提交测试，计算维度得分，生成性格报告
+        function submitQuiz() {
+            // 初始化四大维度得分（0分倾向前者，得分越高倾向后者）
+            let scores = {
+                extrovert: 0, // 外向(0-低) vs 内向(20-高)
+                emotional: 0, // 感性(0-低) vs 理性(20-高)
+                detail: 0,    // 细致(0-低) vs 粗犷(20-高)
+                active: 0     // 主动(0-低) vs 被动(20-高)
+            };
+
+            // 校验是否所有题目都已作答
+            let allAnswered = true;
+            questions.forEach(q => {
+                const selected = document.querySelector(`input[name="q-${q.id}"]:checked`);
+                if (!selected) {
+                    allAnswered = false;
+                    document.getElementById(`q-${q.id}`).style.borderColor = "#e53e3e";
+                    setTimeout(() => {
+                        document.getElementById(`q-${q.id}`).style.borderColor = "#e2e8f0";
+                    }, 1500);
+                } else {
+                    // 累加对应维度得分（选第二个选项得1分，第一个得0分）
+                    scores[q.type] += Number(selected.value);
+                }
+            });
+
+            if (!allAnswered) {
+                alert("请完成所有题目后再提交哦！");
+                return;
+            }
+
+            // 生成性格分析报告
+            const report = generateReport(scores);
+
+            // 显示结果和报告
+            const resultDom = document.getElementById('result');
+            const reportDom = document.getElementById('personalityReport');
+            const resetBtn = document.querySelector('.reset-btn');
+            const submitBtn = document.querySelector('.submit-btn');
+
+            resultDom.style.display = "block";
+            reportDom.style.display = "block";
+            resetBtn.style.display = "block";
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = "0.6";
+
+            resultDom.innerHTML = `✅ 测试完成！你的性格特质分析如下`;
+            reportDom.innerHTML = report;
+        }
+
+        // 根据得分生成性格报告
+        function generateReport(scores) {
+            // 维度解读（得分0-6：倾向前者；7-13：中性；14-20：倾向后者）
+            const extrovertDesc = scores.extrovert <= 6 ? "外向开朗" : (scores.extrovert <= 13 ? "内外向均衡" : "内向内敛");
+            const emotionalDesc = scores.emotional <= 6 ? "感性细腻" : (scores.emotional <= 13 ? "感性与理性并存" : "理性客观");
+            const detailDesc = scores.detail <= 6 ? "严谨细致" : (scores.detail <= 13 ? "粗细适中" : "大气粗犷");
+            const activeDesc = scores.active <= 6 ? "主动积极" : (scores.active <= 13 ? "主动与被动兼顾" : "温和被动");
+
+            // 综合性格总结
+            let summary = "";
+            if (scores.extrovert <= 6 && scores.emotional <= 6 && scores.active <= 6) {
+                summary = "你是典型的「阳光共情者」，外向开朗、感性细腻，主动热情，善于与人相处，总能敏锐捕捉他人情绪，是身边人的「小太阳」，愿意主动伸出援手，深受大家喜欢。";
+            } else if (scores.extrovert >= 14 && scores.emotional >= 14 && scores.detail >= 14) {
+                summary = "你是典型的「理性独立者」，内向内敛、理性客观，注重效率和结果，心思大气不纠结细节，习惯独立思考和完成事情，不轻易依赖他人，有自己的节奏和坚持。";
+            } else if (scores.extrovert <= 6 && scores.emotional >= 14 && scores.detail <= 6) {
+                summary = "你是典型的「严谨思考者」，外向但理性，善于表达且注重细节，做事情一丝不苟，既能主动与人协作，又能保持客观冷静，擅长统筹规划，是团队中的可靠伙伴。";
+            } else if (scores.extrovert >= 14 && scores.emotional <= 6 && scores.active >= 14) {
+                summary = "你是典型的「温和观察者」，内向但感性，不善言辞却内心细腻，习惯被动接受，不喜欢主动争取，却能默默关注身边的一切，共情能力强，是很好的倾听者。";
+            } else {
+                summary = "你是「多元平衡型」性格，没有明显的极端倾向，在不同场景下能灵活调整自己的状态，既能享受独处的宁静，也能适应热闹的社交；既能感性共情，也能理性思考，适应能力强，生活中懂得灵活变通。";
+            }
+
+            // 优势与建议
+            const advantages = "你的性格优势在于：" + (
+                scores.extrovert <= 6 ? "善于社交，亲和力强；" : (scores.extrovert >= 14 ? "独立思考，专注自我；" : "适应力强，张弛有度；")
+            ) + (
+                scores.emotional <= 6 ? "共情力强，懂得体谅他人；" : (scores.emotional >= 14 ? "冷静理智，善于分析；" : "既能共情也能理性，懂得平衡；")
+            ) + (
+                scores.detail <= 6 ? "严谨细致，不易出错；" : (scores.detail >= 14 ? "大气豁达，不纠结琐事；" : "粗细适中，懂得抓重点；")
+            ) + (
+                scores.active <= 6 ? "主动积极，执行力强；" : (scores.active >= 14 ? "温和从容，心态平和；" : "能进能退，懂得变通；")
+            );
+
+            const suggestions = "小建议：" + (
+                scores.extrovert <= 6 ? "适当给自己留独处时间，避免过度消耗精力；" : (scores.extrovert >= 14 ? "可以尝试主动与人交流，拓展社交圈；" : "")
+            ) + (
+                scores.emotional <= 6 ? "遇到事情多给自己一点冷静思考的时间，避免被情绪左右；" : (scores.emotional >= 14 ? "可以多关注自己和他人的情绪，学会共情；" : "")
+            ) + (
+                scores.detail <= 6 ? "偶尔可以放宽标准，不必事事追求完美，给自己减负；" : (scores.detail >= 14 ? "做事情可以多关注细节，避免因粗心出错；" : "")
+            ) + (
+                scores.active <= 6 ? "适当放慢节奏，学会倾听他人的意见，避免过于急躁；" : (scores.active >= 14 ? "遇到机会可以勇敢一点，主动争取自己想要的；" : "")
+            );
+
+            // 拼接报告
+            return `
+                <div class="report-title">你的性格画像</div>
+                <p><strong>核心特质：</strong>${extrovertDesc}、${emotionalDesc}、${detailDesc}、${activeDesc}</p>
+                <p><strong>性格总结：</strong>${summary}</p>
+                <p><strong>性格优势：</strong>${advantages}</p>
+                <p><strong>成长建议：</strong>${suggestions}</p>
+                <p style="margin-top: 15px; color: #718096; font-size: 14px;">注：本测试仅为性格参考，每个人都是独一无二的，接纳自己的所有特质，就是最好的状态～</p>
+            `;
+        }
+
+        // 重新测试
+        function resetQuiz() {
+            const resultDom = document.getElementById('result');
+            const reportDom = document.getElementById('personalityReport');
+            const resetBtn = document.querySelector('.reset-btn');
+            const submitBtn = document.querySelector('.submit-btn');
+
+            // 重置页面状态
+            resultDom.style.display = "none";
+            reportDom.style.display = "none";
+            resetBtn.style.display = "none";
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = "1";
+
+            // 重新渲染题目
+            renderQuiz();
+        }
+
+        // 页面加载时渲染题目
+        window.onload = renderQuiz;
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
